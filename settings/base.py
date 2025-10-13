@@ -25,6 +25,7 @@ DJANGO_AND_THIRD_PARTY_APPS = [
     'django.contrib.staticfiles',
 ]
 PROJECT_APPS = [
+    'abstracts',  # ✅ добавь эту строку
     'catalogs',
     'commerces',
 ]
@@ -90,3 +91,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
