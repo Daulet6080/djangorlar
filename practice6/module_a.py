@@ -63,5 +63,5 @@ def cluster_demo(n: int = 10):
     print("Bounding box:", c.bounding_box())
 
 if __name__ == "__main__":
-    cluster_demo(14)
+    cluster_demo(25)
     
