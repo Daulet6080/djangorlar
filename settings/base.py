@@ -28,6 +28,7 @@ PROJECT_APPS = [
     'abstracts',  # ✅ добавь эту строку
     'catalogs',
     'commerces',
+    
 ]
 INSTALLED_APPS = DJANGO_AND_THIRD_PARTY_APPS + PROJECT_APPS
 
