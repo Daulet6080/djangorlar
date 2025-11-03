@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from abstracts.models import AbstractSoftDeletableModel  # ✅ импортируем
 
-class Address(models.Model):
+class Address(AbstractSoftDeletableModel):  # ✅ наследуем
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
@@ -12,7 +13,7 @@ class Address(models.Model):
         return f"{self.city}, {self.street}"
 
 
-class Order(models.Model):
+class Order(AbstractSoftDeletableModel):  # ✅ наследуем
     STATUS_CHOICES = [
         ('new', 'New'),
         ('confirmed', 'Confirmed'),
@@ -33,7 +34,7 @@ class Order(models.Model):
         return f"Order #{self.pk} - {self.status}"
 
 
-class OrderItem(models.Model):
+class OrderItem(AbstractSoftDeletableModel):  # ✅ наследуем
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     item_name = models.CharField(max_length=100)
     item_price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -44,13 +45,13 @@ class OrderItem(models.Model):
         return f"{self.item_name} x {self.quantity}"
 
 
-class OrderItemOption(models.Model):
+class OrderItemOption(AbstractSoftDeletableModel):  # ✅ наследуем
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name='options')
     option_name = models.CharField(max_length=100)
     price_delta = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
 
-class PromoCode(models.Model):
+class PromoCode(AbstractSoftDeletableModel):  # ✅ наследуем
     code = models.CharField(max_length=50, unique=True)
     discount_percent = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0)])
 
@@ -58,7 +59,7 @@ class PromoCode(models.Model):
         return self.code
 
 
-class OrderPromo(models.Model):
+class OrderPromo(AbstractSoftDeletableModel):  # ✅ наследуем
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     promo = models.ForeignKey(PromoCode, on_delete=models.CASCADE)
     applied_amount = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
