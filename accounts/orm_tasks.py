@@ -1,0 +1,65 @@
+from django.db.models import Q,Count,Avg,Sum,Case,When,Value,IntegerField
+from django.db.models.functions import ExtractYear,Now
+from djangorlal.accounts.models import CustomUser   
+
+q1=CustomUser.objects.filter(is_active=True)
+q2=CustomUser.objects.filter(Q(is_staff=True) & Q(is_active=True))
+q3=CustomUser.objects.annotate(year_joined=ExtractYear('date_joined')).values('year_joined').annotate(count=Count('id')).order_by('year_joined')        
+q4=CustomUser.objects.aggregate(avg_years=Avg(Case(
+    When(date_joined__isnull=False, then=ExtractYear(Now()) - ExtractYear('date_joined')),
+    default=Value(0),
+    output_field=IntegerField()
+)))
+q5=CustomUser.objects.aggregate(total_users=Sum(
+    Case(
+        When(is_active=True, then=1),
+        default=0,
+        output_field=IntegerField()
+    )
+))
+q6=CustomUser.objects.filter(email__icontains='example.com', is_active=True)
+q7=CustomUser.objects.filter(first_name__startswith='A').exclude(is_staff=True)
+q8=CustomUser.objects.filter(last_name__endswith='son').order_by('-date_joined')
+q9=CustomUser.objects.filter(date_joined__year=2023, is_active=True )
+q10=CustomUser.objects.annotate(name_length=Length('first_name') + Length('last_name')).filter(name_length__gt=15)
+q11=CustomUser.objects.filter(Q(first_name__icontains='john') | Q(last_name__icontains='doe'), is_active=True)
+q12=CustomUser.objects.filter(date_joined__month=1, date_joined__day=1)
+q13=CustomUser.objects.annotate(years_since_joined=ExtractYear(Now()) - ExtractYear('date_joined')).filter(years_since_joined__gt=5)
+q14=CustomUser.objects.filter(is_active=True).order_by('last_name', 'first_name')
+q15=CustomUser.objects.filter(email__regex=r'^[a-zA-Z0-9._%+-]+@example\.com$')
+q16=CustomUser.objects.annotate(first_initial=Substr('first_name', 1, 1)).filter(first_initial='J') 
+q17=CustomUser.objects.filter(date_joined__gte=Now()-timedelta(days=30), is_active=True)    
+q18=CustomUser.objects.annotate(num_roles=Count('role')).filter(num_roles__gt=1)
+q19=CustomUser.objects.filter(Q(is_staff=True) | Q(date_joined__year=2024))
+q20=CustomUser.objects.annotate(email_domain=Substr('email', StrIndex('email', Value('@')) + 1)).filter(email_domain='example.com') 
+q21=CustomUser.objects.filter(first_name__in=['Alice', 'Bob', 'Charlie'], is_active=True)
+q22=CustomUser.objects.annotate(last_login_year=ExtractYear('last_login')).values('last_login_year').annotate(count=Count('id')).order_by('last_login_year')
+q23=CustomUser.objects.filter(~Q(email__icontains='spam.com'), is_active=True)
+q24=CustomUser.objects.annotate(full_name=Concat('first_name', Value(' '), 'last_name')).filter(full_name__icontains='Smith')
+q25=CustomUser.objects.filter(date_joined__year__in=[2022, 2023], is_active=True)   
+q26=CustomUser.objects.annotate(joined_month=ExtractMonth('date_joined')).values('joined_month').annotate(count=Count('id')).order_by('joined_month')
+q27=CustomUser.objects.filter(Q(first_name__istartswith='M') & Q(is_staff=False))
+q28=CustomUser.objects.annotate(days_since_joined=Now() - F('date_joined')).filter(days_since_joined__gt=365)
+q29=CustomUser.objects.filter(  email__iendswith='org', is_active=True)
+q30=CustomUser.objects.annotate(initials=Concat(Substr('first_name', 1, 1), Substr('last_name', 1, 1))).filter(initials='JD')       
+q31=CustomUser.objects.filter(date_joined__week_day=1, is_active=True)  
+q32=CustomUser.objects.annotate(num_logins=Count('last_login')).filter(num_logins__gt=10)
+q33=CustomUser.objects.filter(Q(is_active=True) & (Q(first_name__icontains='admin') | Q(last_name__icontains='manager')))
+q34=CustomUser.objects.annotate(domain_length=Length(Substr('email', StrIndex('email', Value('@')) + 1))).filter(domain_length__gt=10)
+q35=CustomUser.objects.filter(first_name__regex=r'^[A-M].*', is_active=True)
+q36=CustomUser.objects.annotate(years_active=ExtractYear(Now()) - ExtractYear('date_joined')).filter(years_active__gt=3)
+q37=CustomUser.objects.filter(Q(is_staff=True) | Q(date_joined__month=12))
+q38=CustomUser.objects.annotate(email_prefix=Substr('email', 1, StrIndex('email', Value('@')) - 1)).filter(email_prefix__icontains='user')
+q39=CustomUser.objects.filter(last_name__in=['Smith', 'Johnson', 'Williams'], is_active=True)
+q40=CustomUser.objects.annotate(last_login_month=ExtractMonth('last_login')).values ('last_login_month').annotate(count=Count('id')).order_by('last_login_month')
+q41=CustomUser.objects.filter(~Q(email__icontains='test.com'), is_active=True)
+q42=CustomUser.objects.annotate(full_name_length=Length(Concat('first_name', Value(' '), 'last_name'))).filter(full_name_length__gt=20)
+q43=CustomUser.objects.filter(date_joined__year__in=[2021, 2022, 2023], is_active=True)   
+q44=CustomUser.objects.annotate(joined_day=ExtractDay('date_joined')).  values('joined_day').annotate(count=Count('id')).order_by('joined_day')
+q45=CustomUser.objects.filter(Q(first_name__istartswith='S') & Q(is_staff=False))
+q46=CustomUser.objects.annotate(days_since_last_login=Now() - F('last_login')).filter(days_since_last_login__gt=30)
+q47=CustomUser.objects.filter(  email__iendswith='net', is_active=True)
+q48=CustomUser.objects.annotate(initials=Concat(Substr('first_name',    1, 1), Substr('last_name', 1, 1))).filter(initials='AS')       
+q49=CustomUser.objects.filter(date_joined__week_day=7, is_active=True)  
+q50=CustomUser.objects.annotate(num_logins=Count('last_login')).filter(num_logins__gt=5)
+    

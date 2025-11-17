@@ -1,10 +1,17 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.validators import MinValueValidator
-from abstracts.models import AbstractSoftDeletableModel  # ✅ импортируем
+from abstracts.models import AbstractSoftDeletableModel  # Базовая модель с soft delete
 
-class Address(AbstractSoftDeletableModel):  # ✅ наследуем
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+# ------------------------------
+# Адреса
+# ------------------------------
+class Address(AbstractSoftDeletableModel):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='addresses'
+    )
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=100)
     details = models.TextField(blank=True)
@@ -12,8 +19,10 @@ class Address(AbstractSoftDeletableModel):  # ✅ наследуем
     def __str__(self):
         return f"{self.city}, {self.street}"
 
-
-class Order(AbstractSoftDeletableModel):  # ✅ наследуем
+# ------------------------------
+# Заказы
+# ------------------------------
+class Order(AbstractSoftDeletableModel):
     STATUS_CHOICES = [
         ('new', 'New'),
         ('confirmed', 'Confirmed'),
@@ -21,7 +30,11 @@ class Order(AbstractSoftDeletableModel):  # ✅ наследуем
         ('done', 'Done'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='orders'
+    )
     restaurant = models.ForeignKey('catalogs.Restaurant', on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
@@ -33,8 +46,10 @@ class Order(AbstractSoftDeletableModel):  # ✅ наследуем
     def __str__(self):
         return f"Order #{self.pk} - {self.status}"
 
-
-class OrderItem(AbstractSoftDeletableModel):  # ✅ наследуем
+# ------------------------------
+# Элементы заказа
+# ------------------------------
+class OrderItem(AbstractSoftDeletableModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     item_name = models.CharField(max_length=100)
     item_price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -44,22 +59,22 @@ class OrderItem(AbstractSoftDeletableModel):  # ✅ наследуем
     def __str__(self):
         return f"{self.item_name} x {self.quantity}"
 
-
-class OrderItemOption(AbstractSoftDeletableModel):  # ✅ наследуем
+class OrderItemOption(AbstractSoftDeletableModel):
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name='options')
     option_name = models.CharField(max_length=100)
     price_delta = models.DecimalField(max_digits=8, decimal_places=2, default=0)
 
-
-class PromoCode(AbstractSoftDeletableModel):  # ✅ наследуем
+# ------------------------------
+# Промокоды
+# ------------------------------
+class PromoCode(AbstractSoftDeletableModel):
     code = models.CharField(max_length=50, unique=True)
     discount_percent = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0)])
 
     def __str__(self):
         return self.code
 
-
-class OrderPromo(AbstractSoftDeletableModel):  # ✅ наследуем
+class OrderPromo(AbstractSoftDeletableModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     promo = models.ForeignKey(PromoCode, on_delete=models.CASCADE)
     applied_amount = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])

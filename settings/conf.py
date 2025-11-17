@@ -18,4 +18,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # твои приложения
     'abstracts',
+    'accounts',
+    'catalogs',     
 ]

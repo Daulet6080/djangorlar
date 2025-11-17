@@ -12,6 +12,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_URLCONF = 'settings.urls'
 WSGI_APPLICATION = 'settings.wsgi.application'
 ASGI_APPLICATION = "settings.asgi.application"
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # ----------------------------------------------
 # Apps
@@ -28,6 +29,7 @@ PROJECT_APPS = [
     'abstracts',  # ✅ добавь эту строку
     'catalogs',
     'commerces',
+    'accounts',
     
 ]
 INSTALLED_APPS = DJANGO_AND_THIRD_PARTY_APPS + PROJECT_APPS
